@@ -1,25 +1,36 @@
-import pbox2d.*;
-import org.jbox2d.common.*;
-import org.jbox2d.dynamics.joints.*;
-import org.jbox2d.collision.shapes.*;
-import org.jbox2d.collision.shapes.Shape;
-import org.jbox2d.common.*;
-import org.jbox2d.dynamics.*;
-import org.jbox2d.dynamics.contacts.*;
-PBox2D box2d;
-ObjectSystem objS;
+SampleSystem sampleSystem;
+Sidebar sidebar;
+Effectbar effectbar;
+Trackpad effectpad;
+Sample sample;
 
-
-void setup(){
+void setup()
+{
   size(720, 480);
-  box2d = new PBox2D(this);
-  box2d.createWorld();
-  objS = new ObjectSystem();
+  sample = new Sample(new PVector(width/2, height/2), 20);
+  sampleSystem = new SampleSystem();
+  sidebar = new Sidebar();
+  effectbar = new Effectbar();
+  effectpad = new Trackpad(150, 360, 550, 100);
 }
 
-void draw(){
-  background(#272727);
-  box2d.step();
-  objS.run();
+void draw()
+{
+  noStroke();
+  sampleSystem.run();
+  sidebar.display();
+  effectbar.display();
+  effectpad.run();
+}
+
+void keyPressed() {
+  // Check if mouse is within the main sample system field
+  if (key == ' ' && mouseX >= sampleSystem.origin.x && mouseX <= sampleSystem.origin.x+sampleSystem.dimensions.x 
+    && mouseY >= sampleSystem.origin.y && mouseY <= sampleSystem.origin.y+sampleSystem.dimensions.y)
+  {
+    sampleSystem.addSample(new Sample(new PVector(mouseX, mouseY), 20)); // Add a new sample
+  }
+
 
 }
+
