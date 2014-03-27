@@ -5,17 +5,21 @@ Sample sample;
 void setup()
 {
   size(720, 480);
-//  sample = new Sample(new PVector(width/2, height/2), 20);
-  sampleSystem = new SampleSystem();
-  sidebar = new Sidebar(sampleSystem);
+  frameRate(30);
+  sidebar = new Sidebar();
+  sampleSystem = new SampleSystem(sidebar);
+  sample = new Sample(new PVector(width/2,height/2), 20, sampleSystem);
+
   
 }
 
 void draw()
 {
+  background(150);
   noStroke();
-  sampleSystem.run();
   sidebar.display();
+  sampleSystem.run();
+  //  sample.run();
   
 }
 

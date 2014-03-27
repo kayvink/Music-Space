@@ -6,15 +6,16 @@ class Sample
   float radius;
   float maxforce;
   float maxspeed; // Sets maximum speed
+  boolean draggable;
   Effectbar effectbar;
   FlowField flowfield;
-  SampleSystem s;
+  SampleSystem samplesystem;
 
-  Sample(PVector _position, float _radius, SampleSystem _s)
+  Sample(PVector _position, float _radius, SampleSystem _samplesystem)
   {
     position = _position; // Position can be set by an argument.
     radius = _radius;  // Radius can be set by an argument.
-    s = _s;
+    samplesystem = _samplesystem;
     maxforce = 0.5;
     maxspeed = 1;
     effectbar = new Effectbar();
@@ -26,6 +27,11 @@ class Sample
     update();
     display();
     effectbar.display();
+
+    if (key == 'f')
+    {
+      flowfield.display();
+    }
   }
 
   void update()
@@ -37,6 +43,7 @@ class Sample
     velocity.limit(maxspeed);  // Limit the velocity.
     position.add(velocity); // Change the position by the amount of velocity.
     acceleration.mult(0); // Reset the acceleration at the end of a cycle.
+    mouseDrag();
   }
 
   void display()
@@ -86,24 +93,50 @@ class Sample
 
   void checkEdges()
   {
-    if (position.x+radius < 0) {
-      position.x = s.dimensions.x;
-    } else if (position.x-radius > s.dimensions.x)
+
+    // Check if the sample has flown off the left side of the main section
+    if (position.x < samplesystem.position.x) {
+      position.x = samplesystem.dimensions.x;
+    } 
+    else if (position.x-radius > samplesystem.dimensions.x && position.x-radius < samplesystem.dimensions.x+5)
     {
-      position.x = s.position.x;
+      position.x = samplesystem.position.x;
     }
-    
-    if (position.y+radius < 0) {
-      position.y = s.dimensions.y;
-    } else if (position.y-radius > s.dimensions.y)
+    // Check if the sample has flown off the right side of the main
+    if (position.y < 0) {
+      position.y = samplesystem.dimensions.y;
+    } 
+    else if (position.y > samplesystem.dimensions.y)
     {
-      position.y = s.position.y;
+      position.y = samplesystem.position.y;
     }
+
+    //    if(position-.x > samplesystem.position.x+5)
+    //    {
+    //      velocity = new PVector(0,0);
+    //      acceleration = new PVector(0,0);
+    //    }
   }
 
   // Apply all forces
   void applyForces()
   {
+  }
+  
+  void mouseDrag()
+  {
+    if(mouseX > position.x-radius && mouseX < position.x+radius && mouseY > position.y-radius && mouseY < position.y+radius && mousePressed)
+    {
+      draggable = true;
+    } else if(mousePressed == false)
+    {
+      draggable = false;
+    }
+    
+    if (draggable)
+    {
+      position = new PVector(mouseX, mouseY);
+    }
   }
 }
 

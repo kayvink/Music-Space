@@ -61,7 +61,6 @@ class FlowField
     stroke(1);
     rotate(vec.heading());
     float arrowLength = vec.mag()*scale;
-    println(arrowLength);
     line(0,0,arrowLength,0);
     line(arrowLength,0,arrowLength-arrowSize,+arrowSize/2);
     line(arrowLength,0,arrowLength-arrowSize,-arrowSize/2);
@@ -70,9 +69,26 @@ class FlowField
   
   PVector lookup(PVector lookedup) // Look up the vector in the flowfield for an input position
   {
-    int column = int(constrain(lookedup.x/resolution, 0, columns-1)); // Constrain to make sure samples off the screen are not checked
-    int row = int(constrain(lookedup.y/resolution, 0, rows-1));
-    return field[column][row].get();
+    int column = int(lookedup.x/resolution);
+    int row = int(lookedup.y/resolution);
+//    We have to check whether the sample is within the flowfield, on the edge of the flowfield or outside of the flowfield. 
+    
+//    When on the edge it gets given the speed from one step back (to correct for an index out of found error), this way it 
+//    flows into the if statement that check whether it is outside of the field and relocates it to the opposite side.
+    if (column == columns) 
+    {
+      return field[column-1][row].get();
+    }else if (row == rows)
+    {
+      return field[column][row-1].get();
+    }else if (row > rows || column > columns)
+    {
+      return new PVector(0,0);  // When outiside of the flowfield, no forces should apply.
+    }
+    else
+    {
+    return field[column][row].get(); // When iside the flowfield the corresponding force should apply. 
+    }
   }
 
 }
