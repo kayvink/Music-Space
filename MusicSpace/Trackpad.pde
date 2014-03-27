@@ -1,25 +1,21 @@
 class Trackpad
 {
-  float x;  // x position
-  float y; // y position 
-  float w; // width
-  float h; // height
-  float xOut; // x output
-  float yOut; // y output
+  PVector position;
+  PVector dimensions;
+  PVector output;
+  
+
   float r;
   float g;
   float b;
   int selectorLen = 10; // selector length
   boolean draggable = false;
 
-  Trackpad(float _x, float _y, float _w, float _h)
+  Trackpad(PVector _position, PVector _dimensions)
   {
-    x = _x;
-    y = _y;
-    w = _w;
-    h = _h;
-    xOut = x + (w/2); // set initial position
-    yOut = y + (h/2);
+    position = _position;
+    dimensions = _dimensions;
+    output = new PVector(position.x+(dimensions.x/2),position.y+(dimensions.y/2)); // Set initial position
   }
 
   void run()
@@ -33,23 +29,23 @@ class Trackpad
   {
 
     
-    r = map(xOut, x, x+xOut, 100, 255);
-    g = map(yOut, y, y+yOut, 50, 255);
-    b = map(x+w-xOut, x, x+xOut, 0, 200);
+    r = map(output.x, position.x, position.x+output.x, 100, 255);
+    g = map(output.y, position.y, position.y+output.y, 50, 255);
+    b = map(position.x+dimensions.x-output.x, position.x, position.x+output.x, 0, 200);
     
     fill(r, g, b); // Colours trackpad
-    rect(x, y, w, h); // Draws trackpad rectangle
+    rect(position.x, position.y, dimensions.x, dimensions.y); // Draws trackpad rectangle
 
     // Selector
     stroke(150); 
     strokeWeight(2);
-    line(xOut-selectorLen, yOut, xOut+selectorLen, yOut); // Draw lines of selector
-    line(xOut, yOut-selectorLen, xOut, yOut+selectorLen);
+    line(output.x-selectorLen, output.y, output.x+selectorLen, output.y); // Draw lines of selector
+    line(output.x, output.y-selectorLen, output.x, output.y+selectorLen);
   }
 
   void selector()
   {
-    if (mouseX >= xOut - selectorLen && mouseX <= xOut + selectorLen && mouseY >= yOut - selectorLen && mouseY <= yOut + selectorLen && mousePressed)
+    if (mouseX >= output.x - selectorLen && mouseX <= output.x + selectorLen && mouseY >= output.y - selectorLen && mouseY <= output.y + selectorLen && mousePressed)
     {
       draggable = true;
     } else if(mousePressed == false)
@@ -58,22 +54,22 @@ class Trackpad
     }
     
     if(draggable){
-      xOut = mouseX;
-      yOut = mouseY; 
-      if (xOut <= x) // Check for horizontal edges
+      output.x = mouseX;
+      output.y = mouseY; 
+      if (output.x <= position.x) // Check for horizontal edges
       {
-        xOut = x;  
-      }else if (xOut >= x+w)
+        output.x = position.x;  
+      }else if (output.x >= position.x+dimensions.x)
       {
-        xOut = x+w;
+        output.x = position.x+dimensions.x;
       }
       
-      if (yOut <= y)  // Check for vertical edges
+      if (output.y <= position.y)  // Check for vertical edges
       {
-        yOut = y;  
-      }else if (yOut >= y+h)
+        output.y = position.y;  
+      }else if (output.y >= position.y+dimensions.y)
       {
-        yOut = y+h;
+        output.y = position.y+dimensions.y;
       }
     }
   }

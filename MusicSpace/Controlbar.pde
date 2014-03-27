@@ -1,6 +1,6 @@
 abstract class Controlbar
 {
-  PVector origin;
+  PVector position;
   PVector dimensions;
 
   Controlbar()

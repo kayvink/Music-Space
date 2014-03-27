@@ -4,17 +4,17 @@
 class FlowField
 {
   PVector [][] field; // Two dimentional array to store all vectors.
-  PVector origin;
+  PVector position;
   PVector dimensions;
   int columns;  // The amount of columns in the flowfield.
   int rows;  // The amount of rows in the flowfield.
   int resolution;  // The relation of rows/columns and the width/height.
   float count;
   
-  FlowField(PVector _origin, PVector _dimensions, int _resolution)
+  FlowField(PVector _position, PVector _dimensions, int _resolution)
   {
     resolution = _resolution;
-    origin = _origin;
+    position = _position;
     dimensions = _dimensions;
     columns = int(dimensions.x/resolution);
     rows = int(dimensions.y/resolution);
@@ -24,16 +24,22 @@ class FlowField
   
   void initialise()
   {
+    noiseSeed(int(random(10000))); // Get a new flowfield every time
+    float xCount = 0;
     for(int x = 0; x < columns; x ++)
     {
-      count += 1;
+      float yCount = 0;
       for(int y = 0; y < rows; y ++)
       {
-        field[x][y] = new PVector(1, 0); // Create a new random PVector
-                                                         // for every place in field[][]
+        float theta = map(noise(xCount, yCount), 0,1,0,TWO_PI); // Generates a random noise number related to the xCount and yCount and maps it from 0,1 to 0 to 2PI.
+        field[x][y] = new PVector(cos(theta), sin(theta)); // Create a new random PVector
+                                                           // for every place in field[][]
+        yCount += 0.1;
       }
+      xCount += 0.1;
     }
   }
+  
   
   void display()
   {
@@ -52,7 +58,7 @@ class FlowField
     pushMatrix();
     float arrowSize = resolution/2;
     translate(vecX,vecY);
-    stroke(0);
+    stroke(1);
     rotate(vec.heading());
     float arrowLength = vec.mag()*scale;
     println(arrowLength);
@@ -60,6 +66,13 @@ class FlowField
     line(arrowLength,0,arrowLength-arrowSize,+arrowSize/2);
     line(arrowLength,0,arrowLength-arrowSize,-arrowSize/2);
     popMatrix();
+  }
+  
+  PVector lookup(PVector lookedup) // Look up the vector in the flowfield for an input position
+  {
+    int column = int(constrain(lookedup.x/resolution, 0, columns-1)); // Constrain to make sure samples off the screen are not checked
+    int row = int(constrain(lookedup.y/resolution, 0, rows-1));
+    return field[column][row].get();
   }
 
 }
